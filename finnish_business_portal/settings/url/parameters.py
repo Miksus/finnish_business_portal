@@ -1,17 +1,23 @@
 
 
-
-PARAMS_REGISTERS = dict(
+REGISTERS = dict(
     tr="Finnish Trade Register (Finnish: KAUPPAREKISTERIN KUULUTUSTIEDOT)",
     bis="Finnish Business Information System (Finnish: YTJ:n tietopankki)"
 )
 
+# NOTE: 
+#   Open Data require search parameters to be in camelCase
+#   This application uses snake_case
+#   
+#   Transformation from snake_case to camelCase
+#   is done elsewhere/later
 
+META = dict(
+    register = f"Register to use as source: {', '.join(REGISTERS.keys())}",
+    total_results = "bool, whether to show total results or not"
+)
 
-
-
-URL_BASE = "http://avoindata.prh.fi/{register}/v1?totalResults={total_results}"
-PARAMS_SEARCH = dict(
+SEARCH = dict(
     max_results = "Maximum results to show",
     results_from = "Number of result to start with",
     name = "name of the company of to search",
@@ -24,11 +30,3 @@ PARAMS_SEARCH = dict(
     company_registration_from = "Registeration date",
 )
 
-# NOTE: 
-#   Open Data require search parameters to be in camelCase
-#   This application uses snake_case
-#   
-#   Transformation from snake_case to camelCase
-#   is done elsewhere/later
-
-URL_BASE_BY_BUSINESSID = "http://avoindata.prh.fi/{register}/v1/{business_id}"

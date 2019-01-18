@@ -1,5 +1,6 @@
 
-from .settings.url import PARAMS_SEARCH, PARAMS_REGISTERS
+from ..settings.url import parameters
+# .url import PARAMS_SEARCH, PARAMS_REGISTERS
 ALLOWED_CONTAINERS = (list,)
 ALLOWED_SEQUENCES = (str, int, float)
 
@@ -48,17 +49,19 @@ def validate_params(**params) -> None:
         if not param_lens:
             return
         if min(param_lens) != max(param_lens):
-            raise TypeError("List type search parameters unequal lengths")
+            raise TypeError(f"List type search parameters unequal lengths: {param_lens}")
 
     def _validate_keys(params):
-        valid_params = PARAMS_SEARCH
+        valid_params = {**parameters.SEARCH, **parameters.META}
         keys_valid = all(
             key in valid_params
             for key in params
         )
         if not keys_valid:
-            raise KeyError("Not all keys valid")
+            invalid_params = [key for key in params if key not in valid_params]
+            raise KeyError(f"Key(s) {invalid_params} invalid (not approved by the API)")
 
     
     _validate_types(params)
     _validate_sizes(params)
+    _validate_keys(params)

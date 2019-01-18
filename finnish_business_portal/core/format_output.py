@@ -1,12 +1,29 @@
+
+'''
+This file contains formatting functions
+for cumulating the extracted data
+
+General logic:
+    function "get_formatter": 
+        acquires the user specified
+        data type (ie. list of list, dict of list, 
+        pandas dataframe etc.)
+
+    The other functions transforms
+    the "data" to specified type and,
+    if "main" is specified, the "data"
+    is appended to it
+'''
+
 try:
     import pandas as pd
 except ModuleNotFoundError:
     raise ImportWarning("Pandas not found: cannot use dataframes")
 import requests
 
-from .settings import json_keys
+from ..settings import json_keys
 
-# Output formatting
+# Formatting function
 def get_formatter(output_format) -> callable:
     return {
         "dataframe":_to_dataframe,
@@ -15,15 +32,19 @@ def get_formatter(output_format) -> callable:
     }[output_format]
 
 
-def _to_dataframe(data, main=None, **kwargs) -> pd.DataFrame:
+# Data type conversion and data cumulation functions
+
+def _to_dataframe(data, main=None, index=None, **kwargs) -> pd.DataFrame:
     "data: requests.request or pd.DataFrame"
     if isinstance(data, requests.models.Response):
         json = data.json()[json_keys.RESULT]
-        data = pd.DataFrame(json)
+        data = pd.DataFrame(json, **kwargs)
     if main is None:
         main = data
+        if index:
+            main = main.set_index(index)
     else:
-        main = main.append(data, sort=False)
+        main = main.append(data, sort=False, **kwargs)
     return main
 
 def _to_list(data, main=None, **kwargs) -> list:

@@ -1,7 +1,7 @@
 
-from core.parameter_validation import validate_params
-from search_funcs import search_companies, search_companies_deep
-from io_interface import load_params, save_results
+from finnish_business_portal.core.parameter_validation import validate_params
+from finnish_business_portal.search_funcs import search_companies, search_companies_deep
+from finnish_business_portal.supplementary.io import load_params, save_results
 
 import sys
 

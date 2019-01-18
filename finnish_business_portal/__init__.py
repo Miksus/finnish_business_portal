@@ -1,0 +1,2 @@
+from finnish_business_portal.search_funcs import search_companies, search_companies_deep
+from finnish_business_portal.help import *

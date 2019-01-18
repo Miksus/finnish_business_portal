@@ -1,4 +1,4 @@
-from .core.settings.url import PARAMS_SEARCH
+from .settings.url.parameters import SEARCH as PARAMS_SEARCH
 
 def show_search_parameters(func=print):
     search_params = PARAMS_SEARCH
