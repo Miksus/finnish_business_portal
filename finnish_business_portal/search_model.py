@@ -1,6 +1,6 @@
 
 """
-Stage: development
+Stage: Early prototype
 
 """
 from .search_funcs import search_companies, search_companies_deep
