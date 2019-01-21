@@ -8,7 +8,11 @@ import pandas as pd
 """
 State: Untested
 
-This
+This module is independend from search functions and
+meant to support GUI, CLI or other kind of interface.
+
+This module is for loading search parameters for search_funcs
+from disk and saving results from search_funcs to disk
 """
 
 # Master functions
