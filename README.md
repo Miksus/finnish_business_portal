@@ -1,12 +1,9 @@
 # Finnish Business Portal
 
-The purpose of this project is to provide convenient access to Finnish Patent and Registration Office's 
-(Patentti- ja Rekisterihallitus) open data. The aim is to help in automation of acquiring corporate customers' or suppliers'
-addresses, registration information and other public information for various purposes.
+A robust library for accessing the corporate data of Finnish Patent and Registration Office's (Patentti- ja Rekisterihallitus) open data. The aim is to help in automation of acquiring corporate customers' or suppliers' addresses, registration information and other public information for various purposes. The goal is to provide complete access to the APIs with as few lines of code as possible, and in a way that works also tomorrow.
 
-The project is built in a way that require very little maintenance (in case the owner of the APIs decide on releasing new APIs, delete or rename old ones, change parameters et cetera, does not break the library). This is achieved by making as few assumptions as possible and acquiring the layout of the APIs directly from the provider in every run of the software. Only changes in the structure of the APIs or the output format may cause need for maintenance. 
+The project is built in a way that require very little maintenance (in case the provider decides on releasing new APIs, delete or rename old ones, change parameters et cetera, do not break this library) and is very flexible maintaining simplicity. This is achieved by making as few assumptions as possible and acquiring the layout of the APIs directly from the provider in every run of the library. Only changes in the structure of the APIs or the output format may cause need for maintenance. 
 
-If you want to disable the logging, you are free to set the level as desired from the source. The source code should be relatively readable.
 
 ## Getting Started
 
@@ -33,7 +30,7 @@ Keyword Arguments are:
 ```python
 portal.search(name=["name of first company", "name of second company"], company_registration_from="1800-01-01")
 mydata_as_listofdicts = portal.results
-samedata_as_dataframe = portal.results.to_frame(False).results
+samedata_as_dataframe = portal.to_frame(False).results
 ```
 
 Note that inputted lists indicate multiple different searches (but one results data) and strings as 
@@ -42,6 +39,10 @@ easily integrated with reading the parameter lists (for example list of supplier
 
 The boolean value in the to_frame indicate if the dataframe is turned as flat (no inner list of dicts) or not.
 
+<br>If you want to disable the logging, you are free to set the level as desired from the source code. The source code should be relatively readable with only a few files with moderately amount of code.
+
+<br> Recommendations, issues, suggestions, opportunities: koli.mikael@gmail.com
+<br> Plans for GUI application if sufficient public interest for the project. 
 ### Prerequisites
 
 ```
