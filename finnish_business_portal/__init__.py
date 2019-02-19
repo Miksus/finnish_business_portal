@@ -1,3 +1,1 @@
-from finnish_business_portal.search_funcs import search_companies, search_companies_deep
-from finnish_business_portal.help import *
-from finnish_business_portal.supplementary.file_io import load_params, save_results
+from finnish_business_portal.core.model import SearchModel

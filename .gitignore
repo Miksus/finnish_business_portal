@@ -6,11 +6,16 @@ __pycache__/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-
+prototype*
 
 # Scrapy stuff:
 .scrapy
 
+# Logging
+.log
+
+# Visual Studio
+.vscode
 
 # Environments
 .env
