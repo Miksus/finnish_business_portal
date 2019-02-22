@@ -1,0 +1,3 @@
+# Remove IPython Notebooks from code liguistics
+# (cause bias in the ratios of coding languages)
+.ipynb linguist-documentation
