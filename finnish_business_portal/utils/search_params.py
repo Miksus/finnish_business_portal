@@ -37,7 +37,7 @@ def validate_query_params(params) -> None:
     def _validate_types(params):
         allowed_types = allowed_containers + allowed_sequences
         invalid_values = {
-            param: value
+            key: value
             for key, value in params.items()
             if not isinstance(value, allowed_types)
         }

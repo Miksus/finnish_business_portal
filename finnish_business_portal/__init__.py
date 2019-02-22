@@ -1,1 +1,1 @@
-from finnish_business_portal.core.model import SearchModel
+from finnish_business_portal.core.model import SearchModel, make_template

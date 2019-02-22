@@ -14,6 +14,9 @@ prototype*
 # Logging
 .log
 
+# Generated templates
+PRH_template_.+\.xlsx
+
 # Visual Studio
 .vscode
 

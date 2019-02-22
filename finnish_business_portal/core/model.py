@@ -1,11 +1,14 @@
 
 import logging
 import copy
+import os
+
 from typing import List, Dict, Union, AnyStr
 
 import pandas as pd
 
 from .opendata import opendata
+from ..utils.basic_operations import list_of_dicts, dict_of_lists
 from ..utils.data_transformation import flat_dataframe
 from ..utils.search_params import format_query_params
 from .connection import get_page
@@ -47,7 +50,7 @@ class SearchModel:
     """
 
 
-    _api_structure = opendata.DataStructure()
+    _api_structure = opendata.STRUCTURE
     api_infos = _api_structure.query_descriptions
     api_options = _api_structure.query_options
 
@@ -67,6 +70,7 @@ class SearchModel:
         self.deep = deep
         self.loop_results = loop_results
 
+        self._premade_queries = None
         self.results = None
 
 
@@ -89,11 +93,15 @@ class SearchModel:
             self.search(name=["Fortum", "Nokia"], organization_type="Oy")
         
         Returns:
-            [type] -- [description]
+            [SearchModel] -- Self is returned for chaining
         """
 
         query_kwds = dict(wait_time=self.wait_time, loop_results=self.loop_results)
+
         queries = format_query_params(search_param)
+
+        if self.parameters is not None:
+            queries = self._premade_queries + queries 
 
         query_urls = [self._api_structure.form_url(self.api, query_params) for query_params in queries]
         
@@ -114,7 +122,7 @@ class SearchModel:
             flatten [bool] -- Whether to turn dicts inside the frame to multi-index
         
         Returns:
-            [type] -- [description]
+            [SearchModel] -- Self is returned for chaining
         """
 
         if self.results is None:
@@ -130,14 +138,42 @@ class SearchModel:
         self_copy.results = df
         return self_copy
 
+    def parameters_from_file(self, filename, **kwargs):
+        if filename.endswith(".xlsx"):
+            df = pd.read_excel(filename, **kwargs)
+            params = df.to_dict(orient="records")
+        elif filename.endswith(".csv"):
+            df = pd.read_csv(filename, **kwargs)
+            params = df.to_dict(orient="records")
+        else:
+            raise NotImplementedError(f"File type {filename.split('.')[-1]} not implemented")
+        self.parameters = params
+
     @property
     def api(self):
         return self._query_name
         
     @api.setter
-    def api(self, name):
+    def api(self, name:str):
         self._api_structure.validate_query_name(name)
         self._query_name = name
+
+    @property
+    def parameters(self):
+        if self._premade_queries is None:
+            return None
+        return list_of_dicts.to_dict_of_lists(self._premade_queries[0])
+    
+    @parameters.setter
+    def parameters(self, obj:Union[Dict[AnyStr,List], List[Dict]]):
+        if list_of_dicts.check(obj):
+            queries = obj
+        elif dict_of_lists.check(obj):
+            queries = dict_of_lists.to_list_of_dicts(obj)
+        else:
+            raise NotImplementedError
+        (self._api_structure.validate_parameters(self.api, query) for query in queries)
+        self._premade_queries = queries
 
     @property
     def parameter_options(self):
@@ -201,3 +237,45 @@ def _query(urls, wait_time, loop_results=False):
                 msg = f"Not all entries in the API searched ({return_count}), set loop_results=True to get all."
             logger.warning(msg)
     return query_result
+
+def make_template(api=None, filetype="excel"):
+    """Create template to put parameters
+    
+    Arguments:
+        filename {str} -- [description]
+    """
+    def get_unused_filename(template):
+        filename = template.format('')
+        i = 1
+        while os.path.exists(filename):
+            filename = template.format(f'_{i}')
+            i += 1
+        return filename
+
+    api_structure = opendata.STRUCTURE
+    apis = [api] if api is not None else api_structure.query_options
+    filename = "PRH_template{api}{}.{filetype}"
+    
+    if filetype.lower() in ("excel", "xlsx"):
+
+        filename = get_unused_filename(filename.format('{}', api="", filetype="xlsx"))
+        with pd.ExcelWriter(filename) as writer:
+            # All APIs to same file
+            param_infos = []
+            for api in apis:
+                columns = api_structure.get_parameters(api, as_type=List[AnyStr])
+                pd.DataFrame(columns=columns).to_excel(writer, sheet_name=api[:31], index=False)
+
+                column_info = api_structure.get_parameters(api, as_type=List[Dict])
+                param_infos.append(pd.DataFrame(column_info).set_index("name"))
+            pd.concat(param_infos, keys=apis, names=['API name', 'name of the parameter']).to_excel(writer, sheet_name="Parameter info", index=True)
+
+    elif filetype.lower() in ("csv",):
+        for api in apis:
+            filename = get_unused_filename(filename.format('{}', api='_'+api, filetype="csv"))
+            columns = api_structure.get_parameters(api, as_type=List[AnyStr])
+            pd.DataFrame(columns=columns).to_csv(filename, index=False)
+    else:
+        raise NotImplementedError(f"File type {filetype} not supported")
+
+# EOF

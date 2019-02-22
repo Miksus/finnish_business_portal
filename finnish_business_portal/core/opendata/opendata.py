@@ -83,7 +83,7 @@ class DataStructure:
         slug = self.queries[name]["path"]
         return self.base_url+slug
     
-    def form_url(self, name, search_params:Dict):
+    def form_url(self, name, search_params:Dict[AnyStr, AnyStr]):
         """Generate URL from given parameters
         
         Arguments:
@@ -97,16 +97,11 @@ class DataStructure:
 
         val_parser = urllib.parse.quote
 
-        api_params = self.get_parameters(name, as_type=Dict[AnyStr, Dict])
-
         # Format parameters
-        search_params = set_parameter_case(search_params)
-        search_params = append_default_parameters(search_params, api_params)
-        arg_params, kwarg_params = split_to_arg_kwarg_params(search_params, api_params)
-        kwarg_params = set_parameter_order(kwarg_params, order=self.get_parameters(name, as_type=List[AnyStr]))
+        arg_params, kwarg_params = self.format_parameters(name, input_params=search_params)
 
         # Validate parameters
-        self.validate_parameters(name=name, input_params={**arg_params, **kwarg_params})
+        self._validate_parameters(name=name, input_params={**arg_params, **kwarg_params})
 
         # Asseble URL from parameters
         base_url = self.get_url(name).format(**arg_params)
@@ -115,7 +110,6 @@ class DataStructure:
             for param, val in kwarg_params.items()
         ])
         return f'{base_url}?{params_url}'
-
 
     def validate_query_name(self, name:str):
         "Validate that the query (aka. API/operation) name exists "
@@ -145,8 +139,44 @@ class DataStructure:
         }
         return self._queries
 
-    def validate_parameters(self, name, input_params):
-        "Validate the input parameters to be as required"
+    def format_parameters(self, name:str, input_params):
+        """Format the parameters to fit with the API
+        
+        Arguments:
+            name {str} -- [description]
+            input_params {[type]} -- [description]
+        
+        Returns:
+            [type] -- [description]
+        """
+
+        api_params = self.get_parameters(name, as_type=Dict[AnyStr, Dict])
+
+        input_params = set_parameter_case(input_params)
+        input_params = append_default_parameters(input_params, api_params)
+        arg_params, kwarg_params = split_to_arg_kwarg_params(input_params, api_params)
+        kwarg_params = set_parameter_order(kwarg_params, order=self.get_parameters(name, as_type=List[AnyStr]))
+        return arg_params, kwarg_params
+
+    def validate_parameters(self, name, input_params:Dict[AnyStr, AnyStr]):
+        """Validate the input parameters to be as required
+        
+        Arguments:
+            name {[type]} -- Name of the API
+            input_params {Dict[AnyStr, AnyStr]} -- [description]
+        """
+
+        arg_params, kwarg_params = self.format_parameters(name, input_params=input_params)
+        self._validate_parameters(name, input_params={**arg_params, **kwarg_params})
+
+    def _validate_parameters(self, name, input_params:Dict[AnyStr, AnyStr]):
+        """Validate the input parameters to be as required
+        NOTE: Should only used after formatting the parameters
+        
+        Arguments:
+            name {str} -- Name of the API
+            input_params {Dict[AnyStr, AnyStr]} -- [description]
+        """
         api_params = self.get_parameters(name, as_type=Dict[AnyStr, Dict])
 
         validate_parameter_keys(input_params, api_params)
@@ -169,7 +199,6 @@ class DataStructure:
 
     @property
     def query_infos(self):
-        queries = self.queries
         return {
             name: {
                 key: val for key, val in cont.items() 
@@ -180,15 +209,11 @@ class DataStructure:
 
     @property
     def query_descriptions(self):
-        queries = self.queries
         return {
             name: cont["summary"]
             for name, cont in self.queries.items()
         }
 
+STRUCTURE = DataStructure()
 
-
-# FORMATTING
-
-
-
+# EOF

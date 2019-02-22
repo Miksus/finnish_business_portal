@@ -1,13 +1,15 @@
 # Finnish Business Portal
 
-A robust library for accessing the corporate data of Finnish Patent and Registration Office's (Patentti- ja Rekisterihallitus) open data. The aim is to help in automation of acquiring corporate customers' or suppliers' addresses, registration information and other public information for various purposes. The goal is to provide complete access to the APIs with as few lines of code as possible, and in a way that works also tomorrow.
+A robust library for accessing Finnish Patent and Registration Office's (Patentti- ja Rekisterihallitus) open data. The goal is to provide complete access to the APIs with as few lines of code as possible, and in a way that also works tomorrow. 
 
-The project is built in a way that require very little maintenance (in case the provider decides on releasing new APIs, delete or rename old ones, change parameters et cetera, do not break this library) and is very flexible maintaining simplicity. This is achieved by making as few assumptions as possible and acquiring the layout of the APIs directly from the provider in every run of the library. Only changes in the structure of the APIs or the output format may cause need for maintenance. 
+There are limited amount of tools readily available to automate the tedious work of validating business IDs or belonging to a register, updating official names or getting postal addresses. This project is aimed to address this. 
+
+The project is built in a way that require very little maintenance in case the provider decides on releasing new APIs or delete or rename old ones, change parameters, and is very flexible maintaining simplicity. This is achieved by making as few assumptions as possible and acquiring the layout of the APIs directly from the provider in every run of the library. Only changes in the structure of the APIs or the output format may cause direct need for maintenance. 
 
 
 ## Getting Started
 
-Please download the source to your project and call the package. Please see demo.ipynb for thorough examples and tutorial.
+Please copy the source to your project and call the package. Please see demo.ipynb for thorough examples and tutorial.
 
 Importing and getting list of APIs:
 ```python
@@ -16,6 +18,7 @@ busportal.SearchModel.api_infos
 ```
 
 <br>Initiating a search portal and getting the list of parameters for the API:
+
 ```python
 portal = busportal.SearchModel("BisCompany", wait_time=2, loop_results=False, deep=True)
 portal.parameter_infos
@@ -41,7 +44,7 @@ The boolean value in the to_frame indicate if the dataframe is turned as flat (n
 
 <br>If you want to disable the logging, you are free to set the level as desired from the source code. The source code should be relatively readable with only a few files with moderately amount of code.
 
-<br> Recommendations, issues, suggestions, opportunities: koli.mikael@gmail.com
+<br> Recommendations, issues, suggestions: koli.mikael@gmail.com
 <br> Plans for GUI application if sufficient public interest for the project. 
 ### Prerequisites
 
