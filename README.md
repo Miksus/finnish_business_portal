@@ -8,7 +8,7 @@
 
 ## Features
 -  Query data using simple syntax
--  Complete access to the APIs and parameter provided by PRH
+-  Complete access to the APIs and parameters provided by PRH
 
 ### Upcoming Features
 -  Load query parameters from Excel file
