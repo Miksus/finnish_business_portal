@@ -54,6 +54,7 @@ class DataStructure:
         for url in urls:
             page = get_page(url)
             page.raise_for_status()
+            page.encoding='utf-8-sig'
             conts.append(page.json())
 
         self.contents = conts
