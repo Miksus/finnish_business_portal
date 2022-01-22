@@ -37,6 +37,7 @@ def get_page(url, user_agent="Google Chrome", wait_time=None, **kwargs):
 
     logger.debug(f"Connecting to {url}...")
     page = requests.get(url, headers=headers, **kwargs)
+    page.encoding='utf-8-sig'
     
     if not page.ok:
         logger.warning(f"Failed to connect to {url}")
